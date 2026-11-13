@@ -52,3 +52,7 @@ test-output
 # will have compiled files and executables
 target/
 **/gen/schemas
+
+# Next.js
+.next
+out
