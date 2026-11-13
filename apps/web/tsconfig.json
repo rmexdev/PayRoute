@@ -1,0 +1,43 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "jsx": "preserve",
+        "emitDeclarationOnly": false,
+        "esModuleInterop": true,
+        "module": "esnext",
+        "resolveJsonModule": true,
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "incremental": true,
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
+        "paths": {
+            "@/*": ["./*"]
+        },
+        "outDir": "dist",
+        "rootDir": "."
+    },
+    "include": [
+        "app/**/*.ts",
+        "app/**/*.tsx",
+        "app/**/*.js",
+        "app/**/*.jsx",
+        "../../apps/web/.next/types/**/*.ts",
+        "../../dist/apps/web/.next/types/**/*.ts",
+        "next-env.d.ts"
+    ],
+    "exclude": [
+        "out-tsc",
+        "dist",
+        "node_modules",
+        "jest.config.ts",
+        "jest.config.cts",
+        "app/**/*.spec.ts",
+        "app/**/*.test.ts",
+        ".next"
+    ]
+}

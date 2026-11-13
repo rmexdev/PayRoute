@@ -1,11 +1,12 @@
 packages:
-  - 'clients/*'
-  - 'packages/*'
+    - 'clients/*'
+    - 'packages/*'
+    - 'apps/*'
 allowBuilds:
-  '@parcel/watcher': false
-  '@swc/core': true
-  esbuild: true
-  less: false
-  nx: true
-  sharp: set this to true or false
-  unrs-resolver: true
+    '@parcel/watcher': false
+    '@swc/core': true
+    esbuild: true
+    less: false
+    nx: true
+    sharp: 'set this to true or false'
+    unrs-resolver: true
