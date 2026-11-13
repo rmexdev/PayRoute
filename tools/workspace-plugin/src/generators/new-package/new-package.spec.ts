@@ -19,11 +19,11 @@ describe.only('new-package generator', () => {
     it('should have correct configuration', async () => {
         await NewPackageGenerator(tree, options);
 
-        const config = readProjectConfiguration(tree, '@rd/test');
+        const config = readProjectConfiguration(tree, '@pr/test');
 
         expect(config).toBeDefined();
         expect(config.root).toBe('packages/test');
-        expect(config.name).toBe('@rd/test');
+        expect(config.name).toBe('@pr/test');
     });
 
     it('should create readme with package name as heading', async () => {

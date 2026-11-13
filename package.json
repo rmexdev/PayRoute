@@ -1,5 +1,5 @@
 {
-    "name": "@rd/source",
+    "name": "@pr/source",
     "version": "0.0.0",
     "license": "MIT",
     "scripts": {
@@ -7,7 +7,7 @@
         "test": "pnpm typecheck && vitest",
         "typecheck": "tsc -b --noEmit",
         "lint": "eslint --fix && prettier --write",
-        "new-package": "f() { nx g @rd/workspace-plugin:new-package packages/$1; }; f",
+        "new-package": "f() { nx g @pr/workspace-plugin:new-package packages/$1; }; f",
         "reset-node-modules": "./tools/scripts/reset-node-modules.sh",
         "prepare": "husky"
     },

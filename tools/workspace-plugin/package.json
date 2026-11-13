@@ -1,5 +1,5 @@
 {
-    "name": "@rd/workspace-plugin",
+    "name": "@pr/workspace-plugin",
     "version": "0.0.1",
     "private": true,
     "main": "./dist/index.js",
@@ -9,7 +9,7 @@
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "@rd/source": "./src/index.ts",
+            "@pr/source": "./src/index.ts",
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js",
             "default": "./dist/index.js"
