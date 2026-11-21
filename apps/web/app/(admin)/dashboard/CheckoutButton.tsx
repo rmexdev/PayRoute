@@ -4,19 +4,19 @@ import { createPaymentIntent } from '@/app/api/payment-intent/actions';
 import React, { useRef } from 'react';
 
 const CheckoutButton = () => {
-    const key = useRef(crypto.randomUUID()).current;
+    const keyRef = useRef(crypto.randomUUID());
+
+    const handleCreatePaymentIntent = async () => {
+        const resp = await createPaymentIntent(keyRef.current);
+        if (resp) {
+            keyRef.current = crypto.randomUUID();
+        }
+    };
 
     return (
-        <form action={createPaymentIntent}>
-            <input
-                type="text"
-                name="idempotentKey"
-                hidden
-                readOnly
-                value={key}
-            />
-            <button>Create test Payment Intent</button>
-        </form>
+        <button onClick={handleCreatePaymentIntent}>
+            Create test Payment Intent
+        </button>
     );
 };
 

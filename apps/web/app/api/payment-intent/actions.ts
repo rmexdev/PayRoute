@@ -2,9 +2,7 @@
 
 import { BASE_URL } from '@/app/shared/constants.ts';
 
-export async function createPaymentIntent(formData: FormData) {
-    const idempotentKey = formData.get('idempotentKey') as string;
-
+export async function createPaymentIntent(idempotentKey: string) {
     const resp: Response = await fetch(`${BASE_URL}/api/payment-intent`, {
         method: 'POST',
         headers: {
@@ -12,5 +10,7 @@ export async function createPaymentIntent(formData: FormData) {
             'Idempotency-Key': idempotentKey || '',
         },
     });
-    console.log(await resp.json());
+    const data = await resp.json();
+    console.log(data);
+    return data;
 }
