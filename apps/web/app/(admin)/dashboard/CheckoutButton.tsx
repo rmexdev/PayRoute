@@ -7,6 +7,7 @@ const CheckoutButton = () => {
     const keyRef = useRef(crypto.randomUUID());
 
     const handleCreatePaymentIntent = async () => {
+        // todo: use shared types to get correct type inference for resp
         const resp = await createPaymentIntent(keyRef.current);
         if (resp) {
             keyRef.current = crypto.randomUUID();
