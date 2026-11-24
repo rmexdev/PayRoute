@@ -5,7 +5,10 @@ info:
 
 http:
     method: POST
-    url: http://localhost:3000/api/payment-intent
+    url: '{{host}}/payment-intent'
+    headers:
+        - name: Idempotency-Key
+          value: some-uuid-key
     auth: inherit
 
 settings:
