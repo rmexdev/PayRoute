@@ -186,6 +186,9 @@ importers:
       '@nestjs/platform-express':
         specifier: ^11.0.0
         version: 11.2.11(@nestjs/common@11.2.11(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@11.2.11)
+      '@pr/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.14

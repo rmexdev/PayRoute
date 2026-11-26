@@ -64,6 +64,7 @@
         "*.{js,jsx,ts,tsx,md,html,css}": "pnpm lint"
     },
     "workspaces": [
+        "apps/*",
         "packages/*",
         "tools/*"
     ],
