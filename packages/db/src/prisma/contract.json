@@ -4,12 +4,20 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
-    "Post": {
-      "model": "Post",
+    "account": {
+      "model": "Account",
       "namespace": "public"
     },
-    "User": {
-      "model": "User",
+    "ledger_entry": {
+      "model": "LedgerEntry",
+      "namespace": "public"
+    },
+    "payment": {
+      "model": "Payment",
+      "namespace": "public"
+    },
+    "transcation": {
+      "model": "Transcation",
       "namespace": "public"
     }
   },
@@ -17,164 +25,249 @@
     "namespaces": {
       "public": {
         "models": {
-          "Post": {
+          "Account": {
             "fields": {
-              "authorId": {
+              "accountCode": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
-              "content": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "createdAt": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 3
-                  }
-                }
-              },
-              "id": {
+              "accountId": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
-              "title": {
+              "accountName": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
-              "updatedAt": {
+              "accountType": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 3
-                  }
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "normalBalance": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               }
             },
             "relations": {
-              "author": {
+              "ledgerEntries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "accountId"
+                  ],
+                  "targetFields": [
+                    "accountId"
+                  ]
+                },
+                "to": {
+                  "model": "LedgerEntry",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "accountCode": {
+                  "column": "account_code"
+                },
+                "accountId": {
+                  "column": "account_id"
+                },
+                "accountName": {
+                  "column": "account_name"
+                },
+                "accountType": {
+                  "column": "account_type"
+                },
+                "normalBalance": {
+                  "column": "normal_balance"
+                }
+              },
+              "namespaceId": "public",
+              "table": "account"
+            }
+          },
+          "LedgerEntry": {
+            "fields": {
+              "accountId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "amount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 12,
+                    "scale": 2
+                  }
+                }
+              },
+              "direction": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "entryId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "transactionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "account": {
                 "cardinality": "N:1",
                 "nullable": false,
                 "on": {
                   "localFields": [
-                    "authorId"
+                    "accountId"
                   ],
                   "targetFields": [
-                    "id"
+                    "accountId"
                   ]
                 },
                 "to": {
-                  "model": "User",
+                  "model": "Account",
+                  "namespace": "public"
+                }
+              },
+              "transaction": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "transactionId"
+                  ],
+                  "targetFields": [
+                    "transactionId"
+                  ]
+                },
+                "to": {
+                  "model": "Transcation",
                   "namespace": "public"
                 }
               }
             },
             "storage": {
               "fields": {
-                "authorId": {
-                  "column": "authorId"
+                "accountId": {
+                  "column": "account_id"
                 },
-                "content": {
-                  "column": "content"
+                "amount": {
+                  "column": "amount"
                 },
-                "createdAt": {
-                  "column": "createdAt"
+                "direction": {
+                  "column": "direction"
                 },
-                "id": {
-                  "column": "id"
+                "entryId": {
+                  "column": "entry_id"
                 },
-                "title": {
-                  "column": "title"
-                },
-                "updatedAt": {
-                  "column": "updatedAt"
+                "transactionId": {
+                  "column": "transaction_id"
                 }
               },
               "namespaceId": "public",
-              "table": "Post"
+              "table": "ledger_entry"
             }
           },
-          "User": {
+          "Payment": {
             "fields": {
-              "createdAt": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 3
-                  }
-                }
-              },
-              "email": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "id": {
+              "paymentId": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "paymentId": {
+                  "column": "payment_id"
+                }
               },
-              "name": {
-                "nullable": true,
+              "namespaceId": "public",
+              "table": "payment"
+            }
+          },
+          "Transcation": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              },
+              "description": {
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
-              "updatedAt": {
+              "entryDate": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 3
-                  }
+                  "codecId": "pg/date-string@1",
+                  "kind": "scalar"
                 }
               },
-              "username": {
-                "nullable": true,
+              "transactionId": {
+                "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               }
             },
             "relations": {
-              "posts": {
+              "ledgerEntries": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
-                    "id"
+                    "transactionId"
                   ],
                   "targetFields": [
-                    "authorId"
+                    "transactionId"
                   ]
                 },
                 "to": {
-                  "model": "Post",
+                  "model": "LedgerEntry",
                   "namespace": "public"
                 }
               }
@@ -182,26 +275,20 @@
             "storage": {
               "fields": {
                 "createdAt": {
-                  "column": "createdAt"
+                  "column": "created_at"
                 },
-                "email": {
-                  "column": "email"
+                "description": {
+                  "column": "description"
                 },
-                "id": {
-                  "column": "id"
+                "entryDate": {
+                  "column": "entry_date"
                 },
-                "name": {
-                  "column": "name"
-                },
-                "updatedAt": {
-                  "column": "updatedAt"
-                },
-                "username": {
-                  "column": "username"
+                "transactionId": {
+                  "column": "transaction_id"
                 }
               },
               "namespaceId": "public",
-              "table": "User"
+              "table": "transcation"
             }
           }
         }
@@ -213,31 +300,24 @@
       "public": {
         "entries": {
           "table": {
-            "Post": {
+            "account": {
+              "checks": [
+                {
+                  "expression": "(account_type = ANY (ARRAY['asset'::text, 'liability'::text, 'equity'::text, 'revenue'::text, 'expense'::text]))",
+                  "name": "accounts_account_type_check"
+                },
+                {
+                  "expression": "(normal_balance = ANY (ARRAY['debit'::text, 'credit'::text]))",
+                  "name": "accounts_normal_balance_check"
+                }
+              ],
               "columns": {
-                "authorId": {
+                "account_code": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": false
                 },
-                "content": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": true
-                },
-                "createdAt": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nullable": false,
-                  "typeParams": {
-                    "precision": 3
-                  }
-                },
-                "id": {
+                "account_id": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "default": {
@@ -246,119 +326,182 @@
                   },
                   "nullable": false
                 },
-                "title": {
+                "account_name": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "updatedAt": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "nullable": false,
-                  "typeParams": {
-                    "precision": 3
-                  }
-                }
-              },
-              "foreignKeys": [
-                {
-                  "index": {
-                    "name": "Post_authorId_idx_e47547ed"
-                  },
-                  "source": {
-                    "columns": [
-                      "authorId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "Post"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "User"
-                  }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
-                    "authorId"
-                  ],
-                  "name": "Post_authorId_idx_e47547ed",
-                  "prefix": "Post_authorId_idx",
-                  "unique": false
-                }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "id"
-                ]
-              },
-              "uniques": []
-            },
-            "User": {
-              "columns": {
-                "createdAt": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nullable": false,
-                  "typeParams": {
-                    "precision": 3
-                  }
-                },
-                "email": {
+                "account_type": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "id": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "default": {
-                    "expression": "autoincrement()",
-                    "kind": "function"
-                  },
+                "normal_balance": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
                   "nullable": false
-                },
-                "name": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": true
-                },
-                "updatedAt": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "nullable": false,
-                  "typeParams": {
-                    "precision": 3
-                  }
-                },
-                "username": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": true
                 }
               },
               "foreignKeys": [],
               "indexes": [],
               "primaryKey": {
                 "columns": [
-                  "id"
-                ]
+                  "account_id"
+                ],
+                "name": "accounts_pkey"
               },
               "uniques": [
                 {
                   "columns": [
-                    "email"
-                  ]
+                    "account_code"
+                  ],
+                  "name": "accounts_account_code_key"
                 }
               ]
+            },
+            "ledger_entry": {
+              "columns": {
+                "account_id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "amount": {
+                  "codecId": "pg/numeric@1",
+                  "dataType": "pg/numeric",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 12,
+                    "scale": 2
+                  }
+                },
+                "direction": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "entry_id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "transaction_id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "name": "account_id",
+                  "source": {
+                    "columns": [
+                      "account_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ledger_entry"
+                  },
+                  "target": {
+                    "columns": [
+                      "account_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "account"
+                  }
+                },
+                {
+                  "name": "transaction_id",
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "transaction_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ledger_entry"
+                  },
+                  "target": {
+                    "columns": [
+                      "transaction_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "transcation"
+                  }
+                }
+              ],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "entry_id"
+                ],
+                "name": "ledger_entry_pkey1"
+              },
+              "uniques": []
+            },
+            "payment": {
+              "columns": {
+                "payment_id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "payment_id"
+                ],
+                "name": "payment_pkey"
+              },
+              "uniques": []
+            },
+            "transcation": {
+              "columns": {
+                "created_at": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 6
+                  }
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "entry_date": {
+                  "codecId": "pg/date-string@1",
+                  "dataType": "pg/date",
+                  "nullable": false
+                },
+                "transaction_id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "transaction_id"
+                ],
+                "name": "ledger_entry_pkey"
+              },
+              "uniques": []
             }
           }
         },
@@ -366,84 +509,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "920a87b50729a867e21706dd0fa5c3739e273a84ed89eb2f3525633b2d6ef85c"
-  },
-  "execution": {
-    "executionHash": "0ff7f5c55037616d53a67c7c581c1178658b41c7a674a85dd59fc3b8f9dd8a49",
-    "mutations": {
-      "defaults": [
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator",
-            "params": {
-              "precision": 3
-            }
-          },
-          "ref": {
-            "entry": "Post",
-            "field": "createdAt",
-            "namespace": "public"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator",
-            "params": {
-              "precision": 3
-            }
-          },
-          "onUpdate": {
-            "id": "timestampNow",
-            "kind": "generator",
-            "params": {
-              "precision": 3
-            }
-          },
-          "ref": {
-            "entry": "Post",
-            "field": "updatedAt",
-            "namespace": "public"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator",
-            "params": {
-              "precision": 3
-            }
-          },
-          "ref": {
-            "entry": "User",
-            "field": "createdAt",
-            "namespace": "public"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator",
-            "params": {
-              "precision": 3
-            }
-          },
-          "onUpdate": {
-            "id": "timestampNow",
-            "kind": "generator",
-            "params": {
-              "precision": 3
-            }
-          },
-          "ref": {
-            "entry": "User",
-            "field": "updatedAt",
-            "namespace": "public"
-          }
-        }
-      ]
-    }
+    "storageHash": "2d426756177b5b4ac3f10765cda2401c4226fa29da190ecaf7513c291b12e754"
   },
   "capabilities": {
     "postgres": {

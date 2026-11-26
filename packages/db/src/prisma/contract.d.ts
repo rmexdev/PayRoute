@@ -18,9 +18,8 @@ import type {
 } from '@prisma/orm-postgres/contract-types';
 
 export type StorageHash =
-    StorageHashBase<'920a87b50729a867e21706dd0fa5c3739e273a84ed89eb2f3525633b2d6ef85c'>;
-export type ExecutionHash =
-    ExecutionHashBase<'0ff7f5c55037616d53a67c7c581c1178658b41c7a674a85dd59fc3b8f9dd8a49'>;
+    StorageHashBase<'2d426756177b5b4ac3f10765cda2401c4226fa29da190ecaf7513c291b12e754'>;
+export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
     ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -607,32 +606,45 @@ export type StorageColumnInputTypes = ColumnTypesFromStorage<
 >;
 
 export namespace Models {
-    export type public_Post = {
-        authorId: FieldOutputTypes['public']['Post']['authorId'];
-        content: FieldOutputTypes['public']['Post']['content'];
-        createdAt: FieldOutputTypes['public']['Post']['createdAt'];
-        id: FieldOutputTypes['public']['Post']['id'];
-        title: FieldOutputTypes['public']['Post']['title'];
-        updatedAt: FieldOutputTypes['public']['Post']['updatedAt'];
-        author: public_User;
-        readonly [RelationKeys]?: 'author';
+    export type public_Account = {
+        accountCode: FieldOutputTypes['public']['Account']['accountCode'];
+        accountId: FieldOutputTypes['public']['Account']['accountId'];
+        accountName: FieldOutputTypes['public']['Account']['accountName'];
+        accountType: FieldOutputTypes['public']['Account']['accountType'];
+        normalBalance: FieldOutputTypes['public']['Account']['normalBalance'];
+        ledgerEntries: public_LedgerEntry[];
+        readonly [RelationKeys]?: 'ledgerEntries';
     };
-    export type public_User = {
-        createdAt: FieldOutputTypes['public']['User']['createdAt'];
-        email: FieldOutputTypes['public']['User']['email'];
-        id: FieldOutputTypes['public']['User']['id'];
-        name: FieldOutputTypes['public']['User']['name'];
-        updatedAt: FieldOutputTypes['public']['User']['updatedAt'];
-        username: FieldOutputTypes['public']['User']['username'];
-        posts: public_Post[];
-        readonly [RelationKeys]?: 'posts';
+    export type public_LedgerEntry = {
+        accountId: FieldOutputTypes['public']['LedgerEntry']['accountId'];
+        amount: FieldOutputTypes['public']['LedgerEntry']['amount'];
+        direction: FieldOutputTypes['public']['LedgerEntry']['direction'];
+        entryId: FieldOutputTypes['public']['LedgerEntry']['entryId'];
+        transactionId: FieldOutputTypes['public']['LedgerEntry']['transactionId'];
+        account: public_Account;
+        transaction: public_Transcation;
+        readonly [RelationKeys]?: 'account' | 'transaction';
+    };
+    export type public_Payment = {
+        paymentId: FieldOutputTypes['public']['Payment']['paymentId'];
+        readonly [RelationKeys]?: never;
+    };
+    export type public_Transcation = {
+        createdAt: FieldOutputTypes['public']['Transcation']['createdAt'];
+        description: FieldOutputTypes['public']['Transcation']['description'];
+        entryDate: FieldOutputTypes['public']['Transcation']['entryDate'];
+        transactionId: FieldOutputTypes['public']['Transcation']['transactionId'];
+        ledgerEntries: public_LedgerEntry[];
+        readonly [RelationKeys]?: 'ledgerEntries';
     };
 }
 
 export declare const models: {
     public: {
-        Post: Models.public_Post;
-        User: Models.public_User;
+        Account: Models.public_Account;
+        LedgerEntry: Models.public_LedgerEntry;
+        Payment: Models.public_Payment;
+        Transcation: Models.public_Transcation;
     };
 };
 
@@ -654,34 +666,15 @@ type ContractBase = Omit<
                 readonly kind: 'postgres-schema';
                 readonly entries: {
                     readonly table: {
-                        readonly Post: {
+                        readonly account: {
                             columns: {
-                                readonly authorId: {
+                                readonly account_code: {
                                     readonly dataType: 'pg/int4';
                                     readonly codecId: 'pg/int4@1';
                                     readonly nullable: false;
                                     readonly many: false;
                                 };
-                                readonly content: {
-                                    readonly dataType: 'pg/text';
-                                    readonly codecId: 'pg/text@1';
-                                    readonly nullable: true;
-                                    readonly many: false;
-                                };
-                                readonly createdAt: {
-                                    readonly dataType: 'pg/timestamptz';
-                                    readonly codecId: 'pg/timestamptz-date@1';
-                                    readonly nullable: false;
-                                    readonly default: {
-                                        readonly kind: 'function';
-                                        readonly expression: 'now()';
-                                    };
-                                    readonly typeParams: {
-                                        readonly precision: 3;
-                                    };
-                                    readonly many: false;
-                                };
-                                readonly id: {
+                                readonly account_id: {
                                     readonly dataType: 'pg/int4';
                                     readonly codecId: 'pg/int4@1';
                                     readonly nullable: false;
@@ -691,71 +684,171 @@ type ContractBase = Omit<
                                     };
                                     readonly many: false;
                                 };
-                                readonly title: {
+                                readonly account_name: {
                                     readonly dataType: 'pg/text';
                                     readonly codecId: 'pg/text@1';
                                     readonly nullable: false;
                                     readonly many: false;
                                 };
-                                readonly updatedAt: {
-                                    readonly dataType: 'pg/timestamptz';
-                                    readonly codecId: 'pg/timestamptz-date@1';
+                                readonly account_type: {
+                                    readonly dataType: 'pg/text';
+                                    readonly codecId: 'pg/text@1';
                                     readonly nullable: false;
-                                    readonly typeParams: {
-                                        readonly precision: 3;
-                                    };
+                                    readonly many: false;
+                                };
+                                readonly normal_balance: {
+                                    readonly dataType: 'pg/text';
+                                    readonly codecId: 'pg/text@1';
+                                    readonly nullable: false;
                                     readonly many: false;
                                 };
                             };
-                            primaryKey: { readonly columns: readonly ['id'] };
-                            uniques: readonly [];
-                            indexes: readonly [
+                            primaryKey: {
+                                readonly columns: readonly ['account_id'];
+                                readonly name: 'accounts_pkey';
+                            };
+                            uniques: readonly [
                                 {
-                                    readonly name: 'Post_authorId_idx_e47547ed';
-                                    readonly prefix: 'Post_authorId_idx';
-                                    readonly columns: readonly ['authorId'];
-                                    readonly unique: false;
+                                    readonly columns: readonly ['account_code'];
+                                    readonly name: 'accounts_account_code_key';
                                 },
                             ];
+                            indexes: readonly [];
+                            foreignKeys: readonly [];
+                        };
+                        readonly ledger_entry: {
+                            columns: {
+                                readonly account_id: {
+                                    readonly dataType: 'pg/int4';
+                                    readonly codecId: 'pg/int4@1';
+                                    readonly nullable: false;
+                                    readonly many: false;
+                                };
+                                readonly amount: {
+                                    readonly dataType: 'pg/numeric';
+                                    readonly codecId: 'pg/numeric@1';
+                                    readonly nullable: false;
+                                    readonly typeParams: {
+                                        readonly precision: 12;
+                                        readonly scale: 2;
+                                    };
+                                    readonly many: false;
+                                };
+                                readonly direction: {
+                                    readonly dataType: 'pg/text';
+                                    readonly codecId: 'pg/text@1';
+                                    readonly nullable: false;
+                                    readonly many: false;
+                                };
+                                readonly entry_id: {
+                                    readonly dataType: 'pg/int4';
+                                    readonly codecId: 'pg/int4@1';
+                                    readonly nullable: false;
+                                    readonly default: {
+                                        readonly kind: 'function';
+                                        readonly expression: 'autoincrement()';
+                                    };
+                                    readonly many: false;
+                                };
+                                readonly transaction_id: {
+                                    readonly dataType: 'pg/int4';
+                                    readonly codecId: 'pg/int4@1';
+                                    readonly nullable: false;
+                                    readonly many: false;
+                                };
+                            };
+                            primaryKey: {
+                                readonly columns: readonly ['entry_id'];
+                                readonly name: 'ledger_entry_pkey1';
+                            };
+                            uniques: readonly [];
+                            indexes: readonly [];
                             foreignKeys: readonly [
                                 {
                                     readonly source: {
                                         readonly namespaceId: 'public' &
                                             NamespaceId;
-                                        readonly tableName: 'Post';
-                                        readonly columns: readonly ['authorId'];
+                                        readonly tableName: 'ledger_entry';
+                                        readonly columns: readonly [
+                                            'account_id',
+                                        ];
                                     };
                                     readonly target: {
                                         readonly namespaceId: 'public' &
                                             NamespaceId;
-                                        readonly tableName: 'User';
-                                        readonly columns: readonly ['id'];
+                                        readonly tableName: 'account';
+                                        readonly columns: readonly [
+                                            'account_id',
+                                        ];
                                     };
+                                    readonly name: 'account_id';
+                                },
+                                {
+                                    readonly source: {
+                                        readonly namespaceId: 'public' &
+                                            NamespaceId;
+                                        readonly tableName: 'ledger_entry';
+                                        readonly columns: readonly [
+                                            'transaction_id',
+                                        ];
+                                    };
+                                    readonly target: {
+                                        readonly namespaceId: 'public' &
+                                            NamespaceId;
+                                        readonly tableName: 'transcation';
+                                        readonly columns: readonly [
+                                            'transaction_id',
+                                        ];
+                                    };
+                                    readonly name: 'transaction_id';
                                 },
                             ];
                         };
-                        readonly User: {
+                        readonly payment: {
                             columns: {
-                                readonly createdAt: {
-                                    readonly dataType: 'pg/timestamptz';
-                                    readonly codecId: 'pg/timestamptz-date@1';
+                                readonly payment_id: {
+                                    readonly dataType: 'pg/int4';
+                                    readonly codecId: 'pg/int4@1';
+                                    readonly nullable: false;
+                                    readonly many: false;
+                                };
+                            };
+                            primaryKey: {
+                                readonly columns: readonly ['payment_id'];
+                                readonly name: 'payment_pkey';
+                            };
+                            uniques: readonly [];
+                            indexes: readonly [];
+                            foreignKeys: readonly [];
+                        };
+                        readonly transcation: {
+                            columns: {
+                                readonly created_at: {
+                                    readonly dataType: 'pg/timestamp';
+                                    readonly codecId: 'pg/timestamp-date@1';
                                     readonly nullable: false;
                                     readonly default: {
                                         readonly kind: 'function';
                                         readonly expression: 'now()';
                                     };
                                     readonly typeParams: {
-                                        readonly precision: 3;
+                                        readonly precision: 6;
                                     };
                                     readonly many: false;
                                 };
-                                readonly email: {
+                                readonly description: {
                                     readonly dataType: 'pg/text';
                                     readonly codecId: 'pg/text@1';
                                     readonly nullable: false;
                                     readonly many: false;
                                 };
-                                readonly id: {
+                                readonly entry_date: {
+                                    readonly dataType: 'pg/date';
+                                    readonly codecId: 'pg/date-string@1';
+                                    readonly nullable: false;
+                                    readonly many: false;
+                                };
+                                readonly transaction_id: {
                                     readonly dataType: 'pg/int4';
                                     readonly codecId: 'pg/int4@1';
                                     readonly nullable: false;
@@ -765,32 +858,12 @@ type ContractBase = Omit<
                                     };
                                     readonly many: false;
                                 };
-                                readonly name: {
-                                    readonly dataType: 'pg/text';
-                                    readonly codecId: 'pg/text@1';
-                                    readonly nullable: true;
-                                    readonly many: false;
-                                };
-                                readonly updatedAt: {
-                                    readonly dataType: 'pg/timestamptz';
-                                    readonly codecId: 'pg/timestamptz-date@1';
-                                    readonly nullable: false;
-                                    readonly typeParams: {
-                                        readonly precision: 3;
-                                    };
-                                    readonly many: false;
-                                };
-                                readonly username: {
-                                    readonly dataType: 'pg/text';
-                                    readonly codecId: 'pg/text@1';
-                                    readonly nullable: true;
-                                    readonly many: false;
-                                };
                             };
-                            primaryKey: { readonly columns: readonly ['id'] };
-                            uniques: readonly [
-                                { readonly columns: readonly ['email'] },
-                            ];
+                            primaryKey: {
+                                readonly columns: readonly ['transaction_id'];
+                                readonly name: 'ledger_entry_pkey';
+                            };
+                            uniques: readonly [];
                             indexes: readonly [];
                             foreignKeys: readonly [];
                         };
@@ -805,150 +878,59 @@ type ContractBase = Omit<
     readonly target: 'postgres';
     readonly targetFamily: 'sql';
     readonly roots: {
-        readonly Post: {
+        readonly account: {
             readonly namespace: 'public' & NamespaceId;
-            readonly model: 'Post';
+            readonly model: 'Account';
         };
-        readonly User: {
+        readonly ledger_entry: {
             readonly namespace: 'public' & NamespaceId;
-            readonly model: 'User';
+            readonly model: 'LedgerEntry';
+        };
+        readonly payment: {
+            readonly namespace: 'public' & NamespaceId;
+            readonly model: 'Payment';
+        };
+        readonly transcation: {
+            readonly namespace: 'public' & NamespaceId;
+            readonly model: 'Transcation';
         };
     };
     readonly domain: {
         readonly namespaces: {
             readonly public: {
                 readonly models: {
-                    readonly Post: {
+                    readonly Account: {
                         readonly fields: {
-                            readonly authorId: {
+                            readonly accountCode: {
                                 readonly nullable: false;
                                 readonly type: {
                                     readonly kind: 'scalar';
                                     readonly codecId: 'pg/int4@1';
                                 };
                             };
-                            readonly content: {
-                                readonly nullable: true;
-                                readonly type: {
-                                    readonly kind: 'scalar';
-                                    readonly codecId: 'pg/text@1';
-                                };
-                            };
-                            readonly createdAt: {
-                                readonly nullable: false;
-                                readonly type: {
-                                    readonly kind: 'scalar';
-                                    readonly codecId: 'pg/timestamptz-date@1';
-                                    readonly typeParams: {
-                                        readonly precision: 3;
-                                    };
-                                };
-                            };
-                            readonly id: {
+                            readonly accountId: {
                                 readonly nullable: false;
                                 readonly type: {
                                     readonly kind: 'scalar';
                                     readonly codecId: 'pg/int4@1';
                                 };
                             };
-                            readonly title: {
+                            readonly accountName: {
                                 readonly nullable: false;
                                 readonly type: {
                                     readonly kind: 'scalar';
                                     readonly codecId: 'pg/text@1';
                                 };
                             };
-                            readonly updatedAt: {
-                                readonly nullable: false;
-                                readonly type: {
-                                    readonly kind: 'scalar';
-                                    readonly codecId: 'pg/timestamptz-date@1';
-                                    readonly typeParams: {
-                                        readonly precision: 3;
-                                    };
-                                };
-                            };
-                        };
-                        readonly relations: {
-                            readonly author: {
-                                readonly to: {
-                                    readonly namespace: 'public' & NamespaceId;
-                                    readonly model: 'User';
-                                };
-                                readonly cardinality: 'N:1';
-                                readonly nullable: false;
-                                readonly on: {
-                                    readonly localFields: readonly ['authorId'];
-                                    readonly targetFields: readonly ['id'];
-                                };
-                            };
-                        };
-                        readonly storage: {
-                            readonly table: 'Post';
-                            readonly namespaceId: 'public';
-                            readonly fields: {
-                                readonly authorId: {
-                                    readonly column: 'authorId';
-                                };
-                                readonly content: {
-                                    readonly column: 'content';
-                                };
-                                readonly createdAt: {
-                                    readonly column: 'createdAt';
-                                };
-                                readonly id: { readonly column: 'id' };
-                                readonly title: { readonly column: 'title' };
-                                readonly updatedAt: {
-                                    readonly column: 'updatedAt';
-                                };
-                            };
-                        };
-                    };
-                    readonly User: {
-                        readonly fields: {
-                            readonly createdAt: {
-                                readonly nullable: false;
-                                readonly type: {
-                                    readonly kind: 'scalar';
-                                    readonly codecId: 'pg/timestamptz-date@1';
-                                    readonly typeParams: {
-                                        readonly precision: 3;
-                                    };
-                                };
-                            };
-                            readonly email: {
+                            readonly accountType: {
                                 readonly nullable: false;
                                 readonly type: {
                                     readonly kind: 'scalar';
                                     readonly codecId: 'pg/text@1';
                                 };
                             };
-                            readonly id: {
+                            readonly normalBalance: {
                                 readonly nullable: false;
-                                readonly type: {
-                                    readonly kind: 'scalar';
-                                    readonly codecId: 'pg/int4@1';
-                                };
-                            };
-                            readonly name: {
-                                readonly nullable: true;
-                                readonly type: {
-                                    readonly kind: 'scalar';
-                                    readonly codecId: 'pg/text@1';
-                                };
-                            };
-                            readonly updatedAt: {
-                                readonly nullable: false;
-                                readonly type: {
-                                    readonly kind: 'scalar';
-                                    readonly codecId: 'pg/timestamptz-date@1';
-                                    readonly typeParams: {
-                                        readonly precision: 3;
-                                    };
-                                };
-                            };
-                            readonly username: {
-                                readonly nullable: true;
                                 readonly type: {
                                     readonly kind: 'scalar';
                                     readonly codecId: 'pg/text@1';
@@ -956,35 +938,227 @@ type ContractBase = Omit<
                             };
                         };
                         readonly relations: {
-                            readonly posts: {
+                            readonly ledgerEntries: {
                                 readonly to: {
                                     readonly namespace: 'public' & NamespaceId;
-                                    readonly model: 'Post';
+                                    readonly model: 'LedgerEntry';
                                 };
                                 readonly cardinality: '1:N';
                                 readonly on: {
-                                    readonly localFields: readonly ['id'];
+                                    readonly localFields: readonly [
+                                        'accountId',
+                                    ];
                                     readonly targetFields: readonly [
-                                        'authorId',
+                                        'accountId',
                                     ];
                                 };
                             };
                         };
                         readonly storage: {
-                            readonly table: 'User';
+                            readonly table: 'account';
+                            readonly namespaceId: 'public';
+                            readonly fields: {
+                                readonly accountCode: {
+                                    readonly column: 'account_code';
+                                };
+                                readonly accountId: {
+                                    readonly column: 'account_id';
+                                };
+                                readonly accountName: {
+                                    readonly column: 'account_name';
+                                };
+                                readonly accountType: {
+                                    readonly column: 'account_type';
+                                };
+                                readonly normalBalance: {
+                                    readonly column: 'normal_balance';
+                                };
+                            };
+                        };
+                    };
+                    readonly LedgerEntry: {
+                        readonly fields: {
+                            readonly accountId: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/int4@1';
+                                };
+                            };
+                            readonly amount: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/numeric@1';
+                                    readonly typeParams: {
+                                        readonly precision: 12;
+                                        readonly scale: 2;
+                                    };
+                                };
+                            };
+                            readonly direction: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/text@1';
+                                };
+                            };
+                            readonly entryId: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/int4@1';
+                                };
+                            };
+                            readonly transactionId: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/int4@1';
+                                };
+                            };
+                        };
+                        readonly relations: {
+                            readonly account: {
+                                readonly to: {
+                                    readonly namespace: 'public' & NamespaceId;
+                                    readonly model: 'Account';
+                                };
+                                readonly cardinality: 'N:1';
+                                readonly nullable: false;
+                                readonly on: {
+                                    readonly localFields: readonly [
+                                        'accountId',
+                                    ];
+                                    readonly targetFields: readonly [
+                                        'accountId',
+                                    ];
+                                };
+                            };
+                            readonly transaction: {
+                                readonly to: {
+                                    readonly namespace: 'public' & NamespaceId;
+                                    readonly model: 'Transcation';
+                                };
+                                readonly cardinality: 'N:1';
+                                readonly nullable: false;
+                                readonly on: {
+                                    readonly localFields: readonly [
+                                        'transactionId',
+                                    ];
+                                    readonly targetFields: readonly [
+                                        'transactionId',
+                                    ];
+                                };
+                            };
+                        };
+                        readonly storage: {
+                            readonly table: 'ledger_entry';
+                            readonly namespaceId: 'public';
+                            readonly fields: {
+                                readonly accountId: {
+                                    readonly column: 'account_id';
+                                };
+                                readonly amount: { readonly column: 'amount' };
+                                readonly direction: {
+                                    readonly column: 'direction';
+                                };
+                                readonly entryId: {
+                                    readonly column: 'entry_id';
+                                };
+                                readonly transactionId: {
+                                    readonly column: 'transaction_id';
+                                };
+                            };
+                        };
+                    };
+                    readonly Payment: {
+                        readonly fields: {
+                            readonly paymentId: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/int4@1';
+                                };
+                            };
+                        };
+                        readonly relations: Record<string, never>;
+                        readonly storage: {
+                            readonly table: 'payment';
+                            readonly namespaceId: 'public';
+                            readonly fields: {
+                                readonly paymentId: {
+                                    readonly column: 'payment_id';
+                                };
+                            };
+                        };
+                    };
+                    readonly Transcation: {
+                        readonly fields: {
+                            readonly createdAt: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/timestamp-date@1';
+                                    readonly typeParams: {
+                                        readonly precision: 6;
+                                    };
+                                };
+                            };
+                            readonly description: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/text@1';
+                                };
+                            };
+                            readonly entryDate: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/date-string@1';
+                                };
+                            };
+                            readonly transactionId: {
+                                readonly nullable: false;
+                                readonly type: {
+                                    readonly kind: 'scalar';
+                                    readonly codecId: 'pg/int4@1';
+                                };
+                            };
+                        };
+                        readonly relations: {
+                            readonly ledgerEntries: {
+                                readonly to: {
+                                    readonly namespace: 'public' & NamespaceId;
+                                    readonly model: 'LedgerEntry';
+                                };
+                                readonly cardinality: '1:N';
+                                readonly on: {
+                                    readonly localFields: readonly [
+                                        'transactionId',
+                                    ];
+                                    readonly targetFields: readonly [
+                                        'transactionId',
+                                    ];
+                                };
+                            };
+                        };
+                        readonly storage: {
+                            readonly table: 'transcation';
                             readonly namespaceId: 'public';
                             readonly fields: {
                                 readonly createdAt: {
-                                    readonly column: 'createdAt';
+                                    readonly column: 'created_at';
                                 };
-                                readonly email: { readonly column: 'email' };
-                                readonly id: { readonly column: 'id' };
-                                readonly name: { readonly column: 'name' };
-                                readonly updatedAt: {
-                                    readonly column: 'updatedAt';
+                                readonly description: {
+                                    readonly column: 'description';
                                 };
-                                readonly username: {
-                                    readonly column: 'username';
+                                readonly entryDate: {
+                                    readonly column: 'entry_date';
+                                };
+                                readonly transactionId: {
+                                    readonly column: 'transaction_id';
                                 };
                             };
                         };
@@ -1025,71 +1199,6 @@ type ContractBase = Omit<
         };
     };
     readonly extensions: {};
-    readonly execution: {
-        readonly executionHash: ExecutionHash;
-        readonly mutations: {
-            readonly defaults: readonly [
-                {
-                    readonly onCreate: {
-                        readonly id: 'timestampNow';
-                        readonly kind: 'generator';
-                        readonly params: { readonly precision: 3 };
-                    };
-                    readonly ref: {
-                        readonly entry: 'Post';
-                        readonly field: 'createdAt';
-                        readonly namespace: 'public';
-                    };
-                },
-                {
-                    readonly onCreate: {
-                        readonly id: 'timestampNow';
-                        readonly kind: 'generator';
-                        readonly params: { readonly precision: 3 };
-                    };
-                    readonly onUpdate: {
-                        readonly id: 'timestampNow';
-                        readonly kind: 'generator';
-                        readonly params: { readonly precision: 3 };
-                    };
-                    readonly ref: {
-                        readonly entry: 'Post';
-                        readonly field: 'updatedAt';
-                        readonly namespace: 'public';
-                    };
-                },
-                {
-                    readonly onCreate: {
-                        readonly id: 'timestampNow';
-                        readonly kind: 'generator';
-                        readonly params: { readonly precision: 3 };
-                    };
-                    readonly ref: {
-                        readonly entry: 'User';
-                        readonly field: 'createdAt';
-                        readonly namespace: 'public';
-                    };
-                },
-                {
-                    readonly onCreate: {
-                        readonly id: 'timestampNow';
-                        readonly kind: 'generator';
-                        readonly params: { readonly precision: 3 };
-                    };
-                    readonly onUpdate: {
-                        readonly id: 'timestampNow';
-                        readonly kind: 'generator';
-                        readonly params: { readonly precision: 3 };
-                    };
-                    readonly ref: {
-                        readonly entry: 'User';
-                        readonly field: 'updatedAt';
-                        readonly namespace: 'public';
-                    };
-                },
-            ];
-        };
-    };
     readonly meta: {};
     readonly profileHash: ProfileHash;
 };

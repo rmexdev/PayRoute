@@ -1,7 +1,7 @@
 // use prisma-8
 // Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
 
-model Accounts {
+model Account {
   accountId     Int           @id(map: "accounts_pkey") @default(autoincrement()) @map("account_id")
   accountCode   Int           @unique(map: "accounts_account_code_key") @map("account_code")
   accountName   String        @map("account_name")
@@ -11,7 +11,7 @@ model Accounts {
 
   @@check(expression: sql`(account_type = ANY (ARRAY['asset'::text, 'liability'::text, 'equity'::text, 'revenue'::text, 'expense'::text]))`, map: "accounts_account_type_check")
   @@check(expression: sql`(normal_balance = ANY (ARRAY['debit'::text, 'credit'::text]))`, map: "accounts_normal_balance_check")
-  @@map("accounts")
+  @@map("account")
 }
 
 model Transcation {
@@ -30,13 +30,14 @@ model LedgerEntry {
   accountId     Int                              @map("account_id")
   direction     String
   amount        Decimal(precision: 12, scale: 2)
-  account       Accounts                         @relation(fields: [accountId], references: [accountId], map: "account_id", index: false)
+  account       Account                          @relation(fields: [accountId], references: [accountId], map: "account_id", index: false)
   transaction   Transcation                      @relation(fields: [transactionId], references: [transactionId], onDelete: Cascade, map: "transaction_id", index: false)
 
   @@map("ledger_entry")
 }
 
-// WARNING: This table has no primary key in the database
-model PaymentIntent {
-  @@map("payment_intent")
+model Payment {
+  paymentId Int @id(map: "payment_pkey") @map("payment_id")
+
+  @@map("payment")
 }
